@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+	   default-lazy-init="true">
+
+	<bean id="normalRepaymentDetail"
+		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="durability" value="true"/>
+		<!-- 定义Job的Bean -->
+		<property name="jobClass" value="com.yingu.poc.job.MonthlyRepaymentJob" />
+	</bean>
+
+	<bean id="speRepaymentDetail"
+		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="durability" value="true"/>
+		<!-- 定义Job的Bean -->
+		<property name="jobClass" value="com.yingu.poc.job.MonthlyRepaymentJob" />
+	</bean>
+
+	<bean id="normalRepaymentTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+
+		<!-- 指定jobDetail -->
+
+		<property name="jobDetail" ref="normalRepaymentDetail" />
+		<property name="description" value="每月15,30执行月还"/>
+		<!-- 指定任务触发的时间 -->
+
+		<property name="cronExpression">
+			<!-- <value>0/30 * * * * ?</value> -->
+			<!-- <value>0 0 2,15 L 2 ?</value> -->
+			<value>0 0 2,15 15,30 * ?</value>
+		</property>
+	</bean>
+
+	<bean id="speRepaymentTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+
+		<!-- 指定jobDetail -->
+
+		<property name="jobDetail" ref="speRepaymentDetail" />
+
+		<!-- 指定任务触发的时间 -->
+		<property name="description" value="二月最后一天执行月还"/>
+		<property name="cronExpression">
+			<!-- <value>0/30 * * * * ?</value> -->
+			<value>0 0 2,15 L 2 ?</value>
+		</property>
+	</bean>
+	
+	<bean id="scheduler"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		
+		<property name="jobFactory">
+            <bean class="com.yingu.poc.job.MyJobFactory" />
+        </property>
+		
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+
+		<!--方式一 : quartz.properties配置文件是放在classpath下 -->
+		<property name="configLocation" value="classpath:property/quartz.properties" />
+
+		<!--方式三 : quartz.properties配置文件写入到配置XML中 -->
+		<!-- 同步现有的Trigger至数据库 -->
+		<property name="overwriteExistingJobs" value="true" />
+
+		<property name="triggers">
+			<!-- 多个Trigger在此配置 -->
+			<list>
+				<!-- <ref bean="normalRepaymentTrigger" /> -->
+				<!-- <ref bean="speRepaymentTrigger" /> -->
+			</list>
+		</property>
+		<!-- 支持Spring注入 -->
+		<property name="globalTriggerListeners">
+			<!-- 全局TriggerListener配置 -->
+			<list>
+				<ref bean="triggerListenerForBackup"/>
+			</list>
+		</property>
+
+		<!-- <property name="quartzProperties"> <props> <prop key="org.quartz.scheduler.instanceName">quartzScheduler</prop> 
+			<prop key="org.quartz.scheduler.instanceId">AUTO</prop> <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop> 
+			<prop key="org.quartz.threadPool.threadCount">3</prop> <prop key="org.quartz.threadPool.threadPriority">5</prop> 
+			<prop key="org.quartz.jobStore.misfireThreshold">60000</prop> <prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreTX</prop> 
+			<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.MSSQLDelegate 
+			</prop> <prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS 
+			UPDLOCK WHERE LOCK_NAME = ?</prop> <prop key="org.quartz.jobStore.tablePrefix">QRTZ_</prop> 
+			<prop key="org.quartz.jobStore.isClustered">true</prop> <prop key="org.quartz.jobStore.clusterCheckinInterval">20000</prop> 
+			</props> </property> -->
+		<property name="applicationContextSchedulerContextKey" value="applicationContextKey" />
+		<property name="autoStartup" value="true" />
+	</bean>
+	<!-- <bean id="triggerListenerForBackup" class="com.yingu.poc.job.TriggerListenerForBackup">
+		<property name="qrtzTriggerService" ref="qrtzTriggerService"></property>
+	</bean> -->
+</beans>

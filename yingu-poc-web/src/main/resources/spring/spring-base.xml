@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	http://www.springframework.org/schema/data/jpa
+    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd"
+	   default-lazy-init="true">
+	
+	<!-- 该标签隐式的向Spring容器注册了：AutowiredAnnotationBeanPostProcessor、CommondAnnotationBeanPostProcessor、PersistenceAnnotationBeanPostProcessor、RequiredAnnotationBeanPostProcessor -->
+	<context:annotation-config />
+	<!-- 开启AOP -->
+	<aop:aspectj-autoproxy/>
+	
+	<context:component-scan base-package="com.yingu.poc">
+		<context:exclude-filter type="annotation"  expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+	<!-- mongo 配置 -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/property/jdbc.properties</value>
+				<value>classpath:/property/rabbitmq.properties</value>
+				<value>classpath:/property/app.properties</value>
+				<value>classpath:/property/shiro.properties</value>
+				<!-- <value>classpath:/property/quartz.properties</value> -->
+			</list>
+		</property>
+	</bean>
+	
+	
+	<bean id="wall-filter" class="com.alibaba.druid.wall.WallFilter">
+	    <property name="dbType" value="mysql" />
+	</bean>
+	
+	<!-- 数据源,事务管理配置文件 -->
+	<!-- alibaba druid datasource -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName">
+			<value>com.mysql.jdbc.Driver</value>
+		</property>
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		
+		<!-- 监控数据库 -->
+		<property name="filters" value="stat" />
+		
+		<!-- 连接池最大使用连接数量 -->
+		<property name="maxActive" value="100" />
+		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="10" />
+		<!-- 获取连接最大等待时间 -->
+		<property name="maxWait" value="600000" />
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="1" />
+		
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="600000" />
+		 <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		
+		<!-- <property name="validationQuery" value="SELECT 1 from dual" /> -->
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		
+		<!-- 打开removeAbandoned功能 -->
+		<property name="removeAbandoned" value="true"/>
+		<!-- 1800秒，也就是30分钟 -->
+		<property name="removeAbandonedTimeout" value="1800"/>
+		<property name="connectionProperties" value="druid.stat.slowSqlMillis=3000" />
+		
+		<!-- 配置监控统计拦截的filters -->
+		<property name="proxyFilters">
+	        <list>
+	            <ref bean="wall-filter" />
+	        </list>
+    	</property>
+	</bean>
+	
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/> 
+        <property name="persistenceUnitName" value="mysqlPU"/>
+        <property name="packagesToScan">
+            <list>
+                <value>com.yingu.poc.pojo</value>
+            </list>
+        </property>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+            </bean>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <!-- always puts logging out to the console...we want it in the log file -->
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">none</prop>
+                <prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+                <!-- <prop key="net.sf.ehcache.configurationResourceName">ehcache.xml</prop> -->
+                <prop key="hibernate.cache.use_second_level_cache">true</prop>
+                <prop key="hibernate.cache.use_structured_entries">true</prop>
+                <prop key="hibernate.cache.use_query_cache">true</prop>
+                <!--<prop key="hibernate.generate_statistics">true</prop>-->
+                <prop key="hibernate.default_batch_fetch_size">500</prop>
+                <prop key="hibernate.max_fetch_depth">5</prop>
+                <prop key="hibernate.jdbc.batch_size">1000</prop>
+                <prop key="hibernate.use_outer_join">true</prop>
+            </props>
+        </property>
+    </bean>
+	
+	<jpa:repositories base-package="com.yingu.poc.dao" transaction-manager-ref="transactionManager" entity-manager-factory-ref="entityManagerFactory"/>
+	
+	<!-- 配置 JPA 使用的事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory"/>
+	</bean>
+	
+	<!-- 事务管理器 -->
+	<!-- <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean> -->
+	
+	<!-- myBatis文件 -->
+	<!-- <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		自动扫描entity目录, 配置包的基路径即可，多个包用;分割
+		<property name="typeAliasesPackage" value="testSpring.entity"/>
+		自动扫描mapping目录, 省掉Configuration.xml里的手工配置
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:com/yg/omp/mapping/*Mapper.xml</value>
+			</list>
+		</property>
+	</bean> -->
+	
+	<!-- 扫描basePackage下所有以@MyBatisRepository标识的 接口-->
+	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.yingu.poc.mapper" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</bean> -->
+	
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+	<!-- 事务控制 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="save*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="do*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="insert*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="batch*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="edit*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="remove*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="delete*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="select*" read-only="true" />
+			<tx:method name="find*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<aop:pointcut id="txPointcut" expression="execution(* *..service.impl.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut" />
+	</aop:config>
+</beans>

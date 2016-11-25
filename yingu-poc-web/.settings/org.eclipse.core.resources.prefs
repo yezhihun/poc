@@ -1,0 +1,13 @@
+eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/resources/dev/property/app.properties=UTF-8
+encoding//src/main/resources/dev/property/jdbc.properties=UTF-8
+encoding//src/main/resources/dev/property/quartz.properties=UTF-8
+encoding//src/main/resources/dev/property/rabbitmq.properties=UTF-8
+encoding//src/main/resources/dev/property/shiro.properties=UTF-8
+encoding//src/main/resources/test/property/app.properties=UTF-8
+encoding//src/main/resources/test/property/jdbc.properties=UTF-8
+encoding//src/main/resources/test/property/quartz.properties=UTF-8
+encoding//src/main/resources/test/property/rabbitmq.properties=UTF-8
+encoding//src/main/resources/test/property/shiro.properties=UTF-8
+encoding//src/test/java=UTF-8

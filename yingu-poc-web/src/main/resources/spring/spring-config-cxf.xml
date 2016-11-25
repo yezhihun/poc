@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:jaxws="http://cxf.apache.org/jaxws"
+	   xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+	   xsi:schemaLocation="http://cxf.apache.org/jaxws
+     http://cxf.apache.org/schemas/jaxws.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
+
+    <!-- 导入与CXF框架有关的xml -->                       
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+    
+    <!--发布服务器端webservice接口  -->
+    <!-- 注意这个配置implementorClass就是配置这个service的interface，然后implementor就是去引用Spring容器中的CrmCustomerBusinessImpl这个bean，这样配置，就能在webservice的实现service中注入service、dao了。  -->
+	<jaxws:endpoint id="cxfForOmWebService" implementorClass="com.yingu.poc.webservice.ForOmWebService" implementor="#forOmWebService" address="/forOmWebService" />
+	
+	<!-- 作为客户端访问服务器端接口 -->
+	<!-- <jaxws:client id="coreBorrowForOmp" serviceClass="com.yph.core.borrowtrade.webservice.CoreBorrowForOmpWebService" address="${trade_service_url}/yph-core/cxfservice/coreBorrowForOmpWebService?wsdl" />
+	<jaxws:client id="coreForOmp" serviceClass="com.yph.core.lendertrade.webservice.CoreForOmpWebService" address="${trade_service_url}/yph-core/cxfservice/coreForOmpWebService?wsdl" />
+	<jaxws:client id="loanForOmp" serviceClass="com.yph.webservice.LoanForCoreWebService" address="${loan_service_url}/xtLoanService/cxfservice/LoanForCoreWebService?wsdl" />
+	
+	<jaxws:client id="onlineForCoreWebService" serviceClass="com.ephwealth.admin.webservice.OnlineForCoreWebService" address="${coreAccessOnlineAddress}" /> -->
+	<!-- 使用下面的设置则会对所有服务生效 ,设置超时时间 -->
+	<http-conf:conduit name="*.http-conduit">
+		<http-conf:client ConnectionTimeout="30000" ReceiveTimeout="300000"/>
+	</http-conf:conduit>
+</beans>

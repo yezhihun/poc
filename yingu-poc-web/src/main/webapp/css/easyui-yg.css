@@ -1,0 +1,50 @@
+.panel-header, .panel-body {
+   border:none !important; 
+}
+.datagrid-cell, .datagrid-cell-group, .datagrid-header-rownumber, .datagrid-cell-rownumber {    font-size: 14px;
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;}
+	.datagrid-header .datagrid-cell span {
+    font-size: 14px;
+    font-weight: bold;
+}
+.datagrid-view {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #ddd !important;
+	    border-radius: 5px 5px 0px 0px;
+}
+.datagrid .datagrid-pager {
+    display: block;
+    margin: 0;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border: none;
+    background: #fff;
+    margin-top: 10px;
+}
+.pagination-page-list, .pagination .pagination-num {
+    border-color: #ccc;
+    font-size: 12px;
+}
+.datagrid-header td, .datagrid-body td, .datagrid-footer td {
+    border-color: #F4EBF4;
+    border-style: solid;
+}
+.datagrid-row-over,
+.datagrid-header td.datagrid-header-over {
+      background-color: #f9f9f9;
+  color: #000000;
+  cursor: default;
+}
+.datagrid-row-selected {
+    background: #d9edf7;
+    color: #000000;
+}
+.datagrid-header{ min-height:38px}
+.xiangxi{    text-align: right; color:#999}
+.xiangxi label{    font-weight: normal;}
+.xiangxi #totalMoney{font-weight: bold; color:#c00}
+.datagrid-view {  width: auto !important;}
+.xiangxi {margin: 10px 20px;}

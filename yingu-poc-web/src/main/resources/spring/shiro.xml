@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+	<!--default-lazy-init="true">-->
+
+	<!-- shiroFilter 配置 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<property name="loginUrl"
+			value="${shiro.loginUrl}" />
+		<property name="successUrl" value="/" />
+		<property name="unauthorizedUrl" value="${shiro.unauthorizedUrl}"/>
+		<property name="filters">
+			<util:map>
+				<entry key="cas" value-ref="casFilter" />
+				<entry key="logout" value-ref="logoutFilter" />
+			</util:map>
+		</property>
+		<property name="filterChainDefinitions">
+			<value>
+				/casFailure.jsp = anon
+				/cas = cas
+				/**/logout = logout
+				/** = authc
+			</value>
+		</property>
+	</bean>
+
+
+	<!-- 配置cas认证失败 -->
+	<bean id="casFilter" class="org.apache.shiro.cas.CasFilter">
+		<property name="successUrl" value="/"/>
+		<property name="failureUrl" value="/casFailure.jsp" />
+	</bean>
+
+	<!-- 注销后跳转的路径 -->
+	<bean id="logoutFilter" class="org.apache.shiro.web.filter.authc.LogoutFilter">
+		<property name="redirectUrl" value="${shiro.logoutUrl}"/>
+		<!--<property name="redirectUrl" value="/casFailure.jsp"/>-->
+	</bean>
+
+	<!-- 安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="casRealm" /><!-- 【自定义CAS授权管理器】 -->
+		<!--<property name="sessionManager" ref="sessionManager" />-->
+		<!--<property name="cacheManager" ref="cacheManager" />-->
+		<!--<property name="rememberMeManager" ref="rememberMeManager" />-->
+		<property name="subjectFactory" ref="casSubjectFactory" />   <!-- 【配置安全管理器】 -->
+	</bean>
+
+	<!--<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">-->
+		<!--<property name="cookie" ref="cookie"/>-->
+	<!--</bean>-->
+
+
+	<!-- 【自定义CAS授权管理器】 -->
+	<bean id="casRealm" class="com.yingu.poc.shiro.MyCasRealm">
+		<!-- <property name="userService" ref="userService" /> -->
+		<property name="cachingEnabled" value="true" />
+		<property name="authenticationCachingEnabled" value="true" />
+		<property name="authenticationCacheName" value="authenticationCache" />
+		<property name="authorizationCachingEnabled" value="true" />
+		<property name="authorizationCacheName" value="authorizationCache" />
+		<property name="casServerUrlPrefix" value="${shiro.casServerUrlPrefix}" />
+		<!-- 【CAS服务地址】 -->
+		<property name="casService" value="${shiro.casService}" />
+		<!-- 【子系统（请求认证服务）返回地址，当认证完成，会回调此处】 -->
+
+	</bean>
+	<!-- 【配置安全管理器】 -->
+	<bean id="casSubjectFactory" class="org.apache.shiro.cas.CasSubjectFactory" />
+
+</beans>

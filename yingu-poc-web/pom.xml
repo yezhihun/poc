@@ -1,0 +1,227 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>yingu.poc</groupId>
+	<artifactId>yingu-poc</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>yingu-poc Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<!-- 主要依赖库的版本定义 -->
+		<jdk.version>1.8</jdk.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- shiro start -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-cas</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jasig.cas</groupId>
+			<artifactId>cas-client-core</artifactId>
+			<version>3.1.10</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+		<!-- shiro end -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.0.11</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.6.8</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.35</version>
+		</dependency>
+
+		<dependency>
+			<groupId>yingu.poc</groupId>
+			<artifactId>yingu-poc-job</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>yingu.poc</groupId>
+			<artifactId>yingu-poc-webservice</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<!-- 根据不同环境打包不同配置文件 -->
+	<profiles>
+		<!-- 测试环境 -->
+		<profile>
+			<id>test</id>
+			<properties>
+				<env>test</env>
+			</properties>
+		</profile>
+		<!-- 开发环境 -->
+		<profile>
+			<id>dev</id>
+			<properties>
+				<env>dev</env>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+	</profiles>
+	<!-- -->
+
+	<build>
+		<finalName>yingu-poc</finalName>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<!-- 资源根目录排除各环境的配置，使用单独的资源目录来指定 -->
+				<excludes>
+					<exclude>test/*</exclude>
+					<exclude>dev/*</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources/${env}</directory>
+			</resource>
+		</resources>
+		<plugins>
+
+
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>8.1.8.v20121106</version>
+				<configuration>
+					<webAppConfig>
+						<contextPath>/${project.build.finalName}</contextPath>
+					</webAppConfig>
+					<connectors>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>9080</port>
+							<maxIdleTime>60000</maxIdleTime>
+						</connector>
+						<connector implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
+							<port>8081</port>
+							<maxIdleTime>60000</maxIdleTime>
+							<keystore>C:/Program
+								Files/Java/jdk1.8.0_91/jre/lib/security/cacerts</keystore>
+							<!-- <keystore>/etc/cas/thekeystore</keystore> -->
+							<password>changeit</password>
+							<keyPassword>changeit</keyPassword>
+						</connector>
+					</connectors>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<port>8080</port>
+					<path>/yingu-poc</path>
+					<uriEncoding>UTF-8</uriEncoding>
+					<server>tomcat7</server>
+
+					<httpsPort>9443</httpsPort>
+					<keystoreFile>${basedir}/src/main/resources/keystore/thekeystore</keystoreFile>
+					<!-- <keystoreFile>C:/Program Files/Java/jdk1.8.0_91/jre/lib/security/cacerts</keystoreFile> -->
+					<keystorePass>changeit</keystorePass>
+
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.glassfish</groupId>
+				<artifactId>maven-embedded-glassfish-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<goalPrefix>embedded-glassfish</goalPrefix>
+					<app>${project.build.directory}/${build.finalName}.war</app>
+					<port>8080</port>
+					<contextRoot>${build.finalName}</contextRoot>
+					<autoDelete>true</autoDelete>
+					<server>glassfish</server>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 
+				<configuration> <skip>true</skip> </configuration> </plugin> -->
+			<!-- 打包resources -->
+			<!-- <plugin> <artifactId>maven-resources-plugin</artifactId> <version>2.6</version> 
+				<configuration> <encoding>UTF-8</encoding> <resources> <resource> <directory>src/main/resources</directory> 
+				<includes> <include>*</include> <include>**/*</include> </includes> <excludes> 
+				<exclude>**/*</exclude> <exclude>**/*</exclude> </excludes> <filtering>true</filtering> 
+				</resource> </resources> </configuration> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-jar-plugin</artifactId> <version>2.4</version> <configuration> 
+				<archive> <manifest> <addClasspath>true</addClasspath> 指定配置文件中lib路径 <classpathPrefix>lib/</classpathPrefix> 
+				<mainClass>com.yg.omp.job.MonthlyRepaymentJob</mainClass> </manifest> </archive> 
+				</configuration> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-dependency-plugin</artifactId> <version>2.1</version> <configuration> 
+				copy jar <outputDirectory>${basedir}/lib/</outputDirectory> </configuration> 
+				<executions> <execution> <phase>prepare-package</phase> <goals> <goal>copy-dependencies</goal> 
+				</goals> </execution> </executions> </plugin> -->
+
+			<!-- end 打包jar -->
+			<!-- 打包war -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<warName>yingu-poc-${env}</warName>
+					<webResources>
+						<resource>
+							<directory>src/main/resources/${env}</directory>
+							<targetPath>WEB-INF/classes</targetPath>
+							<filtering>true</filtering>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+			<!-- end 打包war -->
+		</plugins>
+	</build>
+</project>

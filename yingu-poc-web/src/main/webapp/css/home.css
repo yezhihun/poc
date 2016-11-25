@@ -1,0 +1,66 @@
+
+table{border-collapse:collapse;border-spacing:0;}
+fieldset,img {border:0;}
+address,caption, cite,code,dfn,th,var{font-style:normal;font-weight:normal;}
+ol,ul {list-style:none;padding: 0px !important;margin: 0px !important;}
+capation,th{text-align:left;}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}
+q:before, q:after{content:' '}
+abbr,acronym{border:0;}
+body{ font-family:"Microsoft YaHei","Hiragino Sans GB";-webkit-font-smoothing:antialiased; height:auto; background:#f1f1f1;padding: 0px !important;margin: 0px !important;}
+a{ text-decoration:none !important}
+a:focus{ border:none !important;outline:0 !important;outline-offset: 0 !important;} 
+@font-face { font-family: "edelsans"; src: url(../fonts/edelsans_regular.otf); } 
+input, textarea, keygen, select, button { font-family:"Microsoft YaHei","Hiragino Sans GB" "Hiragino Sans GB" !important;}
+.clear{clear:both}
+.phpid{ display:none}
+/*html5*/
+article,aside,dialog,footer,header,section,footer,nav,figure,menu{display:block}
+/*base*/
+.mb10{ margin-bottom:10px}
+.tc{text-align:center;}
+
+header{  width:100%; background:url(../img/head_tbg.jpg); position: fixed;top:0px;z-index: 2;}
+header p{ margin:0px 0px 5px}
+header .logo { float:left; height:30px; margin-top:13px; margin-bottom:13px;}
+header .dropdown-toggle{color:#fff}
+header .head_pic{width: 35px;height: 35px;border-radius: 50%; margin-right:10px}
+header .dropdown_big{ float:right; font-size:14px; color:#fff;height: 56px;line-height: 56px;}
+header .dropdown_big div#today{ float:left;  border-right:1px solid #1F69AD; padding-right:20px}
+header .dropdown_big .dropdown-toggle{float:left;border-left:1px solid #79A9D6; padding-left:20px; margin:0px; cursor:pointer;}
+header .dropdown_big .dropdown-menu{ right:0px ;font-size:14px; left: auto; width:105px; min-width:auto;border-radius:0px; }
+header .dropdown_big .dropdown-menu li{padding: 6px 0px;}
+header .dropdown_sm{ float:right; font-size:20px; color:#fff;height: 56px;line-height: 56px;cursor:pointer}
+header .dropdown_sm .dropdown-toggle{ padding-top:20px;}
+header .dropdown_sm .dropdown-menu{ right:0px ;font-size:14px; left: auto; width:100px; min-width:auto;border-radius:0px; }
+
+.home_container{margin-top:76px;  padding-top:50px; padding-bottom:50px; margin-bottom:50px; background:#fff}
+.home_container a{ color:#666666;opacity:0.8;filter:alpha(opacity=80); text-align:center; padding:20px;}
+.home_container a:hover{opacity:1;filter:alpha(opacity=10);transition: 1s cubic-bezier(.2,.3,0,1.07);transform:translate(-6px,-12px);
+-ms-transform:translate(-6px,-12px); /* IE 9 */
+-moz-transform:translate(-6px,-12px); /* Firefox */
+-webkit-transform:translate(-6px,-12px); /* Safari and Chrome */
+-o-transform:translate(-6px,-12px); /* Opera */
+text-shadow:2px 2px 3px #ccc;
+
+}
+.home_container a:hover img{box-shadow:2px 2px 3px #aaaaaa;}
+.home_container img{ width:80px;border-radius: 15px;}
+footer{ height:25px; width:100%; text-align:center; font-size:12px; margin-bottom:20px }
+
+/*��Ӫ��������*/
+ul.left_nav{ width:160px;position: fixed;top:56px; height:100%;background: #2b4c6b; }
+ul.left_nav li{ width:160px; height:100%; background:#2b4c6b; text-align:center; font-size:14px; height:50px; line-height:50px; opacity:0.8;filter:alpha(opacity=80); }
+ul.left_nav li a{ color:#fff;}
+ul.left_nav li:hover{ border-left:2px solid #ff6c5a; background:#293e53; cursor:pointer;opacity:1;filter:alpha(opacity=100);}
+ul.left_nav li.active{border-left:2px solid #ff6c5a; background:#293e53;opacity:1;filter:alpha(opacity=100);}
+.yygl_box_out{padding: 10px;margin-top: 57px;padding-left: 170px;}
+@media (max-width: 991px) {.yygl_box_out{padding-left: 0px;}}
+.yygl_box{min-height:800px;background:#fff;padding: 20px;}
+.yygl_box_sy .panel-body .no_wei,{ text-align:center; color:#999999;}
+.dsh_sp{ color:#428bca; margin-right:5px}
+.yygl_box_sy .col-xs-5{ padding-right:0px;white-space:nowrap;    overflow: hidden;}
+.yygl_box_sy .col-xs-7{ padding-left:0px;white-space:nowrap;    overflow: hidden;}
+.yygl_box_sy .col-xs-7 .table-bordered {border-right: 2px solid #ddd;}
+.yygl_box_sy .col-xs-7 .btn-xs{    margin: 0px 20px;width: 60px;padding: 0px 5px;}
+.yygl_box_sy th{ text-align:center}
